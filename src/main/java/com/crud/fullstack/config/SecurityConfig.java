@@ -1,8 +1,10 @@
-package com.crud.fullstack.security;
+package com.crud.fullstack.config;
 
+import com.crud.fullstack.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -49,10 +51,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // API stateless com JWT não usa CSRF
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Liberação das rotas do Swagger / OpenAPI 3
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll() // imagens dos produtos são públicas
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/produtos/**").permitAll()
-                        .requestMatchers("/api/produtos/**").hasRole("ADMIN")
+
+                        // Rotas ajustadas para '/api/products/**' em inglês para bater com seu Controller
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers("/api/products/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
