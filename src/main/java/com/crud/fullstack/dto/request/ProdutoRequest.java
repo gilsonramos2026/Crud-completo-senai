@@ -1,4 +1,4 @@
-package com.crud.fullstack.dto;
+package com.crud.fullstack.dto.request;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
